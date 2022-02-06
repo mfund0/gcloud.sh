@@ -99,3 +99,18 @@ function _find_fingerprint() {
         return 1
     fi
 }
+
+# list google cloud nat ips
+function gcp-natips() {
+    project=$1 router=$2 name=$3
+    natips=$(gcloud compute routers nats describe --router=${router} --router-region=${_DEFAULT_REGION} --project ${project} --format="csv[no-heading](natIps)" "${name}")
+    natips="${natips//;/ }"
+    for natip in $( echo $natips );do  #TODO
+        gcp-curl "$natip"
+    done
+}
+
+# curl  google api ( https://www.googleapis.com/ ) resources
+function gcp-curl() {
+    curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" $1
+}
